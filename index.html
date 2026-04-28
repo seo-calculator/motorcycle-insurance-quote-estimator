@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motorcycle Insurance Cost Calculator | Riders Share</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #111111;
+    --white: #ffffff;
+    --gray-light: #f5f5f5;
+    --gray-mid: #e5e5e5;
+    --gray-dark: #888888;
+    --blue-rs: #1a8de9;
+    --blue-rs-dark: #1272c2;
+    --red-soft: #fff0f0;
+    --red-dot: #e04444;
+    --green-soft: #f0fff4;
+    --green-dot: #22a84a;
+    --text: #1a1a1a;
+    --text-muted: #666666;
+    --border: #ddd;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--white);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.5;
+    padding: 0;
+  }
+
+  .calculator-wrap {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 0 40px 0;
+  }
+
+  /* Header */
+  .calc-header {
+    background: var(--black);
+    color: var(--white);
+    padding: 28px 28px 24px;
+    border-radius: 10px 10px 0 0;
+  }
+  .calc-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 6px;
+  }
+  .calc-header p {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.45;
+  }
+
+  /* Form */
+  .calc-form {
+    background: var(--gray-light);
+    padding: 24px 28px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-grid .full-width { grid-column: 1 / -1; }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .field-group label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 36px 10px 12px;
+    font-family: var(--font);
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+  select:focus { outline: none; border-color: var(--blue-rs); }
+  select.placeholder { color: var(--gray-dark); }
+
+  /* Segmented controls */
+  .seg-group {
+    display: flex;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--white);
+  }
+  .seg-group input[type="radio"] { display: none; }
+  .seg-group label {
+    flex: 1;
+    text-align: center;
+    padding: 9px 4px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-right: 1px solid var(--border);
+    transition: background 0.12s, color 0.12s;
+    text-transform: none;
+    letter-spacing: 0;
+    line-height: 1.3;
+  }
+  .seg-group label:last-child { border-right: none; }
+  .seg-group input[type="radio"]:checked + label {
+    background: var(--black);
+    color: var(--white);
+    font-weight: 600;
+  }
+
+  /* Toggle */
+  .toggle-group {
+    display: flex;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--white);
+    max-width: 160px;
+  }
+  .toggle-group input[type="radio"] { display: none; }
+  .toggle-group label {
+    flex: 1;
+    text-align: center;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-right: 1px solid var(--border);
+    transition: background 0.12s, color 0.12s;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .toggle-group label:last-child { border-right: none; }
+  .toggle-group input[type="radio"]:checked + label {
+    background: var(--black);
+    color: var(--white);
+    font-weight: 600;
+  }
+
+  /* Submit */
+  .submit-btn {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .submit-btn:hover { background: #2a2a2a; }
+  .submit-btn:active { transform: scale(0.99); }
+
+  /* Validation error */
+  .validation-msg {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #7a5200;
+    display: none;
+  }
+  .validation-msg.visible { display: block; }
+
+  /* Results */
+  .results-section {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    display: none;
+  }
+  .results-section.visible { display: block; }
+
+  .result-card {
+    padding: 28px 28px 24px;
+    border-bottom: 1px solid var(--gray-mid);
+  }
+
+  .rate-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .rate-range {
+    font-size: 38px;
+    font-weight: 800;
+    color: var(--black);
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  .rate-annual {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .avg-compare {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: var(--gray-light);
+    border-radius: 6px;
+    font-size: 13.5px;
+    color: var(--text);
+  }
+  .avg-compare strong { color: var(--black); }
+
+  /* Factors panel */
+  .factors-panel {
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--gray-mid);
+  }
+  .factors-panel h3 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+
+  .factors-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .factor-col h4 {
+    font-size: 12.5px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .dot-red { background: var(--red-dot); }
+  .dot-green { background: var(--green-dot); }
+
+  .factor-col h4.up { color: #b83232; }
+  .factor-col h4.down { color: #1a8a3a; }
+
+  .factor-item {
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-size: 12.5px;
+    line-height: 1.4;
+  }
+  .factor-item.up { background: var(--red-soft); }
+  .factor-item.down { background: var(--green-soft); }
+  .factor-item strong {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .factor-empty {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    font-style: italic;
+    padding: 8px 10px;
+  }
+
+  /* CTA Section */
+  .cta-section {
+    padding: 24px 28px;
+    background: #f8faff;
+    border-bottom: 1px solid var(--gray-mid);
+  }
+  .cta-headline {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--black);
+    margin-bottom: 4px;
+  }
+  .cta-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    width: 100%;
+    padding: 14px 20px;
+    background: var(--blue-rs);
+    color: var(--white);
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    border-radius: 7px;
+    margin-bottom: 10px;
+    transition: background 0.15s;
+    letter-spacing: 0.2px;
+  }
+  .btn-primary:hover { background: var(--blue-rs-dark); }
+  .btn-primary .btn-arrow { margin-left: 6px; }
+
+  .btn-secondary {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    background: transparent;
+    color: var(--black);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .btn-secondary:hover { border-color: var(--black); background: var(--gray-light); }
+  .btn-secondary-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 7px;
+  }
+
+  /* Attribution */
+  .attribution {
+    padding: 16px 28px;
+    border-bottom: 1px solid var(--gray-mid);
+  }
+  .attribution p {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* Footer */
+  .calc-footer {
+    padding: 14px 28px;
+    text-align: center;
+  }
+  .calc-footer p {
+    font-size: 11.5px;
+    color: var(--text-muted);
+  }
+  .calc-footer a {
+    color: var(--blue-rs);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .calc-footer a:hover { text-decoration: underline; }
+
+  /* Responsive */
+  @media (max-width: 560px) {
+    .calc-header { padding: 20px 16px; }
+    .calc-form { padding: 18px 16px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid .full-width { grid-column: 1; }
+    .factors-grid { grid-template-columns: 1fr; }
+    .result-card, .factors-panel, .cta-section, .attribution { padding: 18px 16px; }
+    .rate-range { font-size: 30px; }
+    .calc-footer { padding: 14px 16px; }
+  }
+
+  @media (max-width: 400px) {
+    .seg-group label { font-size: 11px; padding: 8px 2px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="calculator-wrap">
+  <div class="calc-header">
+    <h1>Motorcycle Insurance Cost Calculator</h1>
+    <p>Get an estimated monthly and annual rate range based on your rider profile. Takes about 60 seconds.</p>
+  </div>
+
+  <div class="calc-form">
+    <div class="form-grid">
+
+      <!-- State -->
+      <div class="field-group full-width">
+        <label for="state">State</label>
+        <select id="state" class="placeholder" onchange="this.classList.remove('placeholder')">
+          <option value="" disabled selected>Select your state</option>
+          <option>Alabama</option><option>Alaska</option><option>Arizona</option>
+          <option>Arkansas</option><option>California</option><option>Colorado</option>
+          <option>Connecticut</option><option>Delaware</option><option>Florida</option>
+          <option>Georgia</option><option>Hawaii</option><option>Idaho</option>
+          <option>Illinois</option><option>Indiana</option><option>Iowa</option>
+          <option>Kansas</option><option>Kentucky</option><option>Louisiana</option>
+          <option>Maine</option><option>Maryland</option><option>Massachusetts</option>
+          <option>Michigan</option><option>Minnesota</option><option>Mississippi</option>
+          <option>Missouri</option><option>Montana</option><option>Nebraska</option>
+          <option>Nevada</option><option>New Hampshire</option><option>New Jersey</option>
+          <option>New Mexico</option><option>New York</option><option>North Carolina</option>
+          <option>North Dakota</option><option>Ohio</option><option>Oklahoma</option>
+          <option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option>
+          <option>South Carolina</option><option>South Dakota</option><option>Tennessee</option>
+          <option>Texas</option><option>Utah</option><option>Vermont</option>
+          <option>Virginia</option><option>Washington</option><option>Washington DC</option>
+          <option>West Virginia</option><option>Wisconsin</option><option>Wyoming</option>
+        </select>
+      </div>
+
+      <!-- Bike Type -->
+      <div class="field-group full-width">
+        <label>Bike Type</label>
+        <div class="seg-group" id="seg-bike">
+          <input type="radio" name="bikeType" id="bt-cruiser" value="Cruiser">
+          <label for="bt-cruiser">Cruiser</label>
+          <input type="radio" name="bikeType" id="bt-sport" value="Sport">
+          <label for="bt-sport">Sport</label>
+          <input type="radio" name="bikeType" id="bt-adv" value="ADV">
+          <label for="bt-adv">ADV</label>
+          <input type="radio" name="bikeType" id="bt-touring" value="Touring">
+          <label for="bt-touring">Touring</label>
+          <input type="radio" name="bikeType" id="bt-standard" value="Standard">
+          <label for="bt-standard">Standard</label>
+        </div>
+      </div>
+
+      <!-- Engine Size -->
+      <div class="field-group full-width">
+        <label>Engine Size</label>
+        <div class="seg-group" id="seg-engine">
+          <input type="radio" name="engineSize" id="es-small" value="Under 500cc">
+          <label for="es-small">Under 500cc</label>
+          <input type="radio" name="engineSize" id="es-mid" value="500-999cc">
+          <label for="es-mid">500&ndash;999cc</label>
+          <input type="radio" name="engineSize" id="es-large" value="1000cc+">
+          <label for="es-large">1000cc+</label>
+        </div>
+      </div>
+
+      <!-- Age -->
+      <div class="field-group full-width">
+        <label>Rider Age</label>
+        <div class="seg-group" id="seg-age">
+          <input type="radio" name="ageBracket" id="age-1824" value="18-24">
+          <label for="age-1824">18&ndash;24</label>
+          <input type="radio" name="ageBracket" id="age-2534" value="25-34">
+          <label for="age-2534">25&ndash;34</label>
+          <input type="radio" name="ageBracket" id="age-3549" value="35-49">
+          <label for="age-3549">35&ndash;49</label>
+          <input type="radio" name="ageBracket" id="age-50" value="50+">
+          <label for="age-50">50+</label>
+        </div>
+      </div>
+
+      <!-- Experience -->
+      <div class="field-group full-width">
+        <label>Years of Riding Experience</label>
+        <div class="seg-group" id="seg-exp">
+          <input type="radio" name="experience" id="exp-u2" value="Under 2 years">
+          <label for="exp-u2">Under 2 yrs</label>
+          <input type="radio" name="experience" id="exp-25" value="2-5 years">
+          <label for="exp-25">2&ndash;5 yrs</label>
+          <input type="radio" name="experience" id="exp-510" value="5-10 years">
+          <label for="exp-510">5&ndash;10 yrs</label>
+          <input type="radio" name="experience" id="exp-10p" value="10+ years">
+          <label for="exp-10p">10+ yrs</label>
+        </div>
+      </div>
+
+      <!-- Violations -->
+      <div class="field-group">
+        <label>Violations in Last 3 Years</label>
+        <div class="toggle-group">
+          <input type="radio" name="violations" id="viol-yes" value="Yes">
+          <label for="viol-yes">Yes</label>
+          <input type="radio" name="violations" id="viol-no" value="No">
+          <label for="viol-no">No</label>
+        </div>
+      </div>
+
+      <!-- Coverage Level -->
+      <div class="field-group">
+        <label for="coverage">Coverage Level</label>
+        <select id="coverage">
+          <option value="" disabled selected>Select coverage</option>
+          <option value="Liability Only">Liability Only</option>
+          <option value="Standard">Standard</option>
+          <option value="Full Coverage">Full Coverage</option>
+        </select>
+      </div>
+
+    </div><!-- /form-grid -->
+
+    <button class="submit-btn" onclick="runCalculator()">Estimate My Rate</button>
+    <div class="validation-msg" id="validation-msg">Please fill in all fields before estimating your rate.</div>
+
+  </div><!-- /calc-form -->
+
+  <!-- Results -->
+  <div class="results-section" id="results-section">
+
+    <div class="result-card" id="result-card">
+      <div class="rate-label">Your Estimated Rate Range</div>
+      <div class="rate-range" id="rate-monthly"></div>
+      <div class="rate-annual" id="rate-annual"></div>
+      <div class="avg-compare" id="avg-compare"></div>
+    </div>
+
+    <div class="factors-panel" id="factors-panel">
+      <h3>What's Driving Your Rate</h3>
+      <div class="factors-grid">
+        <div class="factor-col" id="factors-up">
+          <h4 class="up"><span class="dot dot-red"></span> Pushing your rate up</h4>
+          <div id="factors-up-list"></div>
+        </div>
+        <div class="factor-col" id="factors-down">
+          <h4 class="down"><span class="dot dot-green"></span> Working in your favor</h4>
+          <div id="factors-down-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-section">
+      <div class="cta-headline" id="cta-headline"></div>
+      <div class="cta-sub">Riders Share partners with leading motorcycle insurance providers to help riders get competitive quotes. Takes 2 minutes.</div>
+      <a href="#" id="cta-primary" class="btn-primary" target="_blank" rel="noopener">
+        Compare Quotes in <span id="cta-state-name"></span> <span class="btn-arrow">&#8594;</span>
+      </a>
+      <a href="#" id="cta-secondary" class="btn-secondary" target="_blank" rel="noopener">
+        Skip the insurance math. Rent instead.
+      </a>
+      <p class="btn-secondary-note">Insurance included with every Riders Share rental.</p>
+    </div>
+
+    <div class="attribution">
+      <p>Rate estimates based on data from Progressive and the Insurance Information Institute. This is an estimate, not a quote. Actual rates depend on your specific carrier, riding history, and underwriting.</p>
+    </div>
+
+    <div class="calc-footer">
+      <p>Calculator built by <a href="https://www.rizenmetrics.com/" target="_blank" rel="noopener">RiZen Metrics</a> | SEO &amp; AEO Strategy</p>
+    </div>
+
+  </div><!-- /results-section -->
+</div>
+
+<script>
+// ============================================================
+// RATE DATA
+// ============================================================
+
+const BASE_MONTHLY = {
+  'Liability Only': 20,
+  'Standard': 47,
+  'Full Coverage': 72
+};
+
+const STATE_MULTS = {
+  // Tier 1 - 0.72x
+  'Iowa': 0.72, 'North Dakota': 0.72, 'South Dakota': 0.72, 'Maine': 0.72,
+  'Vermont': 0.72, 'Montana': 0.72, 'North Carolina': 0.72, 'Wisconsin': 0.72,
+  'Nebraska': 0.72, 'Massachusetts': 0.72, 'New Hampshire': 0.72, 'Idaho': 0.72, 'Wyoming': 0.72,
+  // Tier 2 - 0.88x
+  'Alaska': 0.88, 'Indiana': 0.88, 'Ohio': 0.88, 'Minnesota': 0.88, 'Oregon': 0.88,
+  'Virginia': 0.88, 'West Virginia': 0.88, 'Colorado': 0.88, 'Washington': 0.88, 'Pennsylvania': 0.88,
+  // Tier 3  -  1.0x
+  'Arkansas': 1.0, 'Kansas': 1.0, 'Missouri': 1.0, 'Connecticut': 1.0, 'Maryland': 1.0,
+  'Rhode Island': 1.0, 'Illinois': 1.0, 'Tennessee': 1.0, 'Georgia': 1.0,
+  'New Mexico': 1.0, 'Nevada': 1.0, 'Oklahoma': 1.0,
+  // Tier 4  -  1.18x
+  'Alabama': 1.18, 'New York': 1.18, 'Michigan': 1.18, 'New Jersey': 1.18,
+  'Delaware': 1.18, 'Utah': 1.18, 'Washington DC': 1.18,
+  // Tier 5  -  1.42x
+  'Kentucky': 1.42, 'Florida': 1.42, 'Arizona': 1.42, 'Mississippi': 1.42,
+  'Texas': 1.42, 'California': 1.42, 'Hawaii': 1.42, 'Louisiana': 1.42, 'South Carolina': 1.42
+};
+
+const STATE_TIERS = {
+  'Iowa': 1, 'North Dakota': 1, 'South Dakota': 1, 'Maine': 1, 'Vermont': 1, 'Montana': 1,
+  'North Carolina': 1, 'Wisconsin': 1, 'Nebraska': 1, 'Massachusetts': 1, 'New Hampshire': 1,
+  'Idaho': 1, 'Wyoming': 1,
+  'Alaska': 2, 'Indiana': 2, 'Ohio': 2, 'Minnesota': 2, 'Oregon': 2, 'Virginia': 2,
+  'West Virginia': 2, 'Colorado': 2, 'Washington': 2, 'Pennsylvania': 2,
+  'Arkansas': 3, 'Kansas': 3, 'Missouri': 3, 'Connecticut': 3, 'Maryland': 3,
+  'Rhode Island': 3, 'Illinois': 3, 'Tennessee': 3, 'Georgia': 3,
+  'New Mexico': 3, 'Nevada': 3, 'Oklahoma': 3,
+  'Alabama': 4, 'New York': 4, 'Michigan': 4, 'New Jersey': 4,
+  'Delaware': 4, 'Utah': 4, 'Washington DC': 4,
+  'Kentucky': 5, 'Florida': 5, 'Arizona': 5, 'Mississippi': 5,
+  'Texas': 5, 'California': 5, 'Hawaii': 5, 'Louisiana': 5, 'South Carolina': 5
+};
+
+const BIKE_MULTS    = { 'Standard': 0.95, 'Cruiser': 1.0, 'Touring': 1.05, 'ADV': 1.2, 'Sport': 2.8 };
+const ENGINE_MULTS  = { 'Under 500cc': 0.75, '500-999cc': 1.0, '1000cc+': 1.45 };
+const AGE_MULTS     = { '18-24': 2.1, '25-34': 1.2, '35-49': 1.0, '50+': 1.05 };
+const EXP_MULTS     = { 'Under 2 years': 1.35, '2-5 years': 1.15, '5-10 years': 1.0, '10+ years': 0.88 };
+const VIOL_MULTS    = { 'Yes': 1.28, 'No': 1.0 };
+
+const FLOORS   = { 'Liability Only': 12, 'Standard': 35, 'Full Coverage': 50 };
+const CEILINGS = { 'Liability Only': 60, 'Standard': 130, 'Full Coverage': 250 };
+
+// ============================================================
+// STATE SLUG MAPPING
+// ============================================================
+
+const STATE_SLUGS = {
+  'Alabama': 'alabama', 'Alaska': 'alaska', 'Arizona': 'arizona',
+  'Arkansas': 'arkansas', 'California': 'california', 'Colorado': 'colorado',
+  'Connecticut': 'connecticut', 'Delaware': 'delaware', 'Florida': 'florida',
+  'Georgia': 'georgia', 'Hawaii': 'hawaii', 'Idaho': 'idaho',
+  'Illinois': 'illinois', 'Indiana': 'indiana', 'Iowa': 'iowa',
+  'Kansas': 'kansas', 'Kentucky': 'kentucky', 'Louisiana': 'louisiana',
+  'Maine': 'maine', 'Maryland': 'maryland', 'Massachusetts': 'massachusetts',
+  'Michigan': 'michigan', 'Minnesota': 'minnesota', 'Mississippi': 'mississippi',
+  'Missouri': 'missouri', 'Montana': 'montana', 'Nebraska': 'nebraska',
+  'Nevada': 'nevada', 'New Hampshire': 'new-hampshire', 'New Jersey': 'new-jersey',
+  'New Mexico': 'new-mexico', 'New York': 'new-york', 'North Carolina': 'north-carolina',
+  'North Dakota': 'north-dakota', 'Ohio': 'ohio', 'Oklahoma': 'oklahoma',
+  'Oregon': 'oregon', 'Pennsylvania': 'pennsylvania', 'Rhode Island': 'rhode-island',
+  'South Carolina': 'south-carolina', 'South Dakota': 'south-dakota',
+  'Tennessee': 'tennessee', 'Texas': 'texas', 'Utah': 'utah',
+  'Vermont': 'vermont', 'Virginia': 'virginia', 'Washington': 'washington',
+  'Washington DC': 'washington-dc', 'West Virginia': 'west-virginia',
+  'Wisconsin': 'wisconsin', 'Wyoming': 'wyoming'
+};
+
+// DEV NOTE: URL pattern is /motorcycle-insurance-[state] (flat), NOT /motorcycle-insurance/[state].
+// Confirm all 50 state pages are live before enabling all CTAs.
+// Known live: california, texas, new-york, washington, pennsylvania.
+// All others need 200-response verification.
+
+// ============================================================
+// FACTOR NOTES
+// ============================================================
+
+const FACTOR_NOTES = {
+  age: {
+    '18-24':  'Young riders pay more  -  rates drop through your late 20s with a clean record',
+    '25-34':  'Moderate age surcharge  -  improves as your record builds',
+    '50+':    'Slight statistical uptick for this bracket at some carriers'
+  },
+  bike: {
+    'Sport':    'Sport bikes cost 2.5–3.5x more than cruisers  -  higher horsepower, theft risk, and claim frequency',
+    'ADV':      'Adventure bikes rate slightly higher than cruisers due to off-road exposure and higher MSRP',
+    'Touring':  'Touring bikes rate near cruiser baseline  -  older rider demographic keeps claim rates low'
+  },
+  engine: {
+    '1000cc+':    'Large displacement is a risk signal  -  stacks with bike type for sport bikes especially',
+    'Under 500cc':'Small displacement earns a discount  -  lower liability exposure and beginner-friendly profile'
+  },
+  experience: {
+    'Under 2 years': 'New riders pay more regardless of age  -  rates improve as your record builds',
+    '2-5 years':     'Your record is still building  -  a clean history will bring this down',
+    '10+ years':     'Long, clean riding history earns a discount at most carriers'
+  },
+  violations: {
+    'Yes': 'Any moving violation in the last 3 years adds a surcharge  -  most fall off your record at the 3-year mark'
+  },
+  stateHigh: 'Your state has above-average rates due to high claim frequency, year-round riding season, and state insurance laws',
+  stateLow:  'Your state has some of the lowest rates in the country  -  short season and low population density help'
+};
+
+// ============================================================
+// HELPER FUNCTIONS
+// ============================================================
+
+function getRadioValue(name) {
+  const checked = document.querySelector('input[name="' + name + '"]:checked');
+  return checked ? checked.value : null;
+}
+
+function formatMoney(n) {
+  return '$' + Math.round(n).toLocaleString();
+}
+
+// ============================================================
+// MAIN CALCULATOR FUNCTION
+// ============================================================
+
+function runCalculator() {
+  // Gather inputs
+  const state      = document.getElementById('state').value;
+  const bikeType   = getRadioValue('bikeType');
+  const engineSize = getRadioValue('engineSize');
+  const ageBracket = getRadioValue('ageBracket');
+  const experience = getRadioValue('experience');
+  const violations = getRadioValue('violations');
+  const coverage   = document.getElementById('coverage').value;
+
+  // Validate all fields filled
+  const msg = document.getElementById('validation-msg');
+  if (!state || !bikeType || !engineSize || !ageBracket || !experience || !violations || !coverage) {
+    msg.classList.add('visible');
+    return;
+  }
+  msg.classList.remove('visible');
+
+  // Calculate point estimate
+  const base  = BASE_MONTHLY[coverage];
+  const sm    = STATE_MULTS[state] || 1.0;
+  const bm    = BIKE_MULTS[bikeType];
+  const em    = ENGINE_MULTS[engineSize];
+  const am    = AGE_MULTS[ageBracket];
+  const xm    = EXP_MULTS[experience];
+  const vm    = VIOL_MULTS[violations];
+  const point = base * sm * bm * em * am * xm * vm;
+
+  // Apply range bands
+  let moLow  = Math.round(point * 0.85);
+  let moHigh = Math.round(point * 1.15);
+
+  // Apply floor/ceiling
+  const floor   = FLOORS[coverage];
+  const ceiling = CEILINGS[coverage];
+  moLow  = Math.max(moLow,  floor);
+  moLow  = Math.min(moLow,  ceiling);
+  moHigh = Math.max(moHigh, floor);
+  moHigh = Math.min(moHigh, ceiling);
+  if (moLow > moHigh) moLow = moHigh;
+
+  const yrLow  = moLow  * 12;
+  const yrHigh = moHigh * 12;
+  const yrMid  = (yrLow + yrHigh) / 2;
+
+  // ---- Display rate range ----
+  document.getElementById('rate-monthly').textContent = formatMoney(moLow) + '\u2013' + formatMoney(moHigh) + '/mo';
+  document.getElementById('rate-annual').textContent  = formatMoney(yrLow) + '\u2013' + formatMoney(yrHigh) + '/yr';
+
+  // ---- National average comparison ----
+  let avgText;
+  if (yrMid < 500) {
+    avgText = 'Your estimate is <strong>below</strong> the national average of $500\u2013$1,500/yr';
+  } else if (yrMid <= 1500) {
+    avgText = 'Your estimate is <strong>within</strong> the national average of $500\u2013$1,500/yr';
+  } else {
+    avgText = 'Your estimate is <strong>above</strong> the national average of $500\u2013$1,500/yr';
+  }
+  document.getElementById('avg-compare').innerHTML = avgText;
+
+  // ---- Factors panel ----
+  const upList   = document.getElementById('factors-up-list');
+  const downList = document.getElementById('factors-down-list');
+  upList.innerHTML   = '';
+  downList.innerHTML = '';
+
+  const factors = [];
+
+  // Collect all factors with their multipliers
+  factors.push({ name: 'Age: ' + ageBracket,       mult: am, type: 'age',        key: ageBracket });
+  factors.push({ name: 'Bike: ' + bikeType,         mult: bm, type: 'bike',       key: bikeType });
+  factors.push({ name: 'Engine: ' + engineSize,     mult: em, type: 'engine',     key: engineSize });
+  factors.push({ name: 'Experience: ' + experience, mult: xm, type: 'experience', key: experience });
+  if (violations === 'Yes') {
+    factors.push({ name: 'Violations: Yes',         mult: vm, type: 'violations', key: 'Yes' });
+  }
+
+  const stateTier = STATE_TIERS[state] || 3;
+  if (stateTier >= 4) {
+    factors.push({ name: 'State: ' + state, mult: sm, type: 'stateHigh', key: 'high' });
+  } else if (stateTier <= 2) {
+    factors.push({ name: 'State: ' + state, mult: sm, type: 'stateLow', key: 'low' });
+  }
+
+  // Sort descending by distance from 1.0
+  factors.sort((a, b) => Math.abs(b.mult - 1.0) - Math.abs(a.mult - 1.0));
+
+  let hasUp = false, hasDown = false;
+
+  factors.forEach(f => {
+    if (f.mult === 1.0) return; // neutral  -  skip
+
+    let note = '';
+    if (f.type === 'age')        note = FACTOR_NOTES.age[f.key]        || '';
+    if (f.type === 'bike')       note = FACTOR_NOTES.bike[f.key]       || '';
+    if (f.type === 'engine')     note = FACTOR_NOTES.engine[f.key]     || '';
+    if (f.type === 'experience') note = FACTOR_NOTES.experience[f.key] || '';
+    if (f.type === 'violations') note = FACTOR_NOTES.violations[f.key] || '';
+    if (f.type === 'stateHigh')  note = FACTOR_NOTES.stateHigh;
+    if (f.type === 'stateLow')   note = FACTOR_NOTES.stateLow;
+
+    if (!note) return;
+
+    const el = document.createElement('div');
+    if (f.mult > 1.0) {
+      el.className = 'factor-item up';
+      el.innerHTML = '<strong>' + f.name + '</strong>' + note;
+      upList.appendChild(el);
+      hasUp = true;
+    } else {
+      el.className = 'factor-item down';
+      el.innerHTML = '<strong>' + f.name + '</strong>' + note;
+      downList.appendChild(el);
+      hasDown = true;
+    }
+  });
+
+  if (!hasUp)   { upList.innerHTML   = '<div class="factor-empty">No surcharges on your profile.</div>'; }
+  if (!hasDown) { downList.innerHTML = '<div class="factor-empty">No discounts detected for this profile.</div>'; }
+
+  // ---- CTA ----
+  const stateSlug = STATE_SLUGS[state] || state.toLowerCase().replace(/\s+/g, '-');
+  const ctaUrl    = 'https://www.riders-share.com/motorcycle-insurance-' + stateSlug;
+
+  // Contextual headline based on rate position
+  let ctaHeadline;
+  if (yrMid > 1200) {
+    ctaHeadline = 'That\'s a lot. Let\'s find you a better rate in ' + state + '.';
+  } else if (yrMid < 400) {
+    ctaHeadline = 'Great news - you\'re in a low-cost bracket. Lock it in.';
+  } else {
+    ctaHeadline = 'Ready to compare real quotes in ' + state + '?';
+  }
+
+  document.getElementById('cta-headline').textContent = ctaHeadline;
+  document.getElementById('cta-primary').href          = ctaUrl;
+  document.getElementById('cta-secondary').href        = 'https://www.riders-share.com/listings/' + stateSlug;
+  document.getElementById('cta-state-name').textContent = state;
+
+  // Show results
+  document.getElementById('results-section').classList.add('visible');
+
+  // Smooth scroll to results
+  setTimeout(() => {
+    document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 80);
+}
+</script>
+</body>
+</html>

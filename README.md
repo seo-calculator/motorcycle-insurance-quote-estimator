@@ -1,4 +1,4 @@
-# motorcycle-insurance-quote-estimator# Motorcycle Insurance Cost Calculator
+Motorcycle Insurance Cost Calculator
 **Riders Share | Built by [RiZen Metrics](https://www.rizenmetrics.com/)**
 
 A self-contained motorcycle insurance cost estimator designed to be iframed into a Prismic blog post. Outputs a monthly and annual rate range based on seven rider inputs. All logic is synchronous and client-side — no build tools, no dependencies, no API calls.

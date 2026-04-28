@@ -92,22 +92,6 @@ Annual values are calculated from adjusted monthly values.
 
 ---
 
-## CTA URLs
-
-### Insurance quote CTA
-Pattern: `https://www.riders-share.com/motorcycle-insurance-[state-slug]`
-
-State slug is generated dynamically from the dropdown value. Two-word states use hyphens (`new-york`, `north-carolina`). Washington DC maps to `washington-dc`.
-
-> **DEV FLAG (embedded in JS):** Not all state insurance pages have been verified live. Known live as of build: california, texas, new-york, washington, pennsylvania. All others need 200-response verification before launch. See the comment in the JS near the CTA link logic.
-
-### Listings CTA
-Pattern: `https://www.riders-share.com/listings/[state-slug]`
-
-Uses the same slug as the insurance CTA. Links the rider directly to motorcycle listings in their state.
-
----
-
 ## Hosting
 
 This repo is the build and staging environment. The file deploys to GitHub Pages as-is.

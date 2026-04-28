@@ -15,7 +15,7 @@ Takes seven inputs from the rider and returns:
 - State-specific CTA linking to the Riders Share insurance quote page
 - Secondary CTA linking to Riders Share state listings
 
-Rate data is sourced from Progressive (published policy data, Apr 2024-Mar 2025) and the Insurance Information Institute. Estimates are validated against ValuePenguin (Jan 2026) and MoneyGeek (Dec 2025) benchmarks.
+Rate data is sourced from available benchmarks as of April 2026.
 
 ---
 

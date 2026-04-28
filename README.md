@@ -1,4 +1,3 @@
-[README (3).md](https://github.com/user-attachments/files/27179032/README.3.md)
 # motorcycle-insurance-quote-estimator# Motorcycle Insurance Cost Calculator
 **Riders Share | Built by [RiZen Metrics](https://www.rizenmetrics.com/)**
 
